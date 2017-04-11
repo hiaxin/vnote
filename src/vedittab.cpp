@@ -105,7 +105,6 @@ void VEditTab::noticeStatusChanged()
 
 void VEditTab::showFileReadMode()
 {
-    qDebug() << "read" << m_file->getName();
     isEditMode = false;
     int outlineIndex = curHeader.m_outlineIndex;
     switch (m_file->getDocType()) {

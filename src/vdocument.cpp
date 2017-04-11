@@ -59,3 +59,14 @@ void VDocument::keyPressEvent(int p_key, bool p_ctrl, bool p_shift)
 {
     emit keyPressed(p_key, p_ctrl, p_shift);
 }
+
+void VDocument::highlightTextAsync(const QString &p_text, int p_id)
+{
+    qDebug() << "highlightTextAsync" << p_text << p_id;
+    emit requestHighlightText(p_text, p_id);
+}
+
+void VDocument::highlightTextCB(const QString &p_html, int p_id)
+{
+    qDebug() << "highlightTextCallBack" << p_html << p_id;
+}

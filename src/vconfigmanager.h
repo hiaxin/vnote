@@ -135,6 +135,9 @@ public:
     inline QString getEditorCurrentLineBackground() const;
     inline QString getEditorCurrentLineVimBackground() const;
 
+    inline bool getEnableCodeBlockHighlight() const;
+    inline void setEnableCodeBlockHighlight(bool p_enabled);
+
 private:
     void updateMarkdownEditStyle();
     QVariant getConfigFromSettings(const QString &section, const QString &key);
@@ -212,6 +215,9 @@ private:
     QString m_editorCurrentLineBackground;
     // Current line background color in editor in Vim mode.
     QString m_editorCurrentLineVimBackground;
+
+    // Enable colde block syntax highlight.
+    bool m_enableCodeBlockHighlight;
 
     // The name of the config file in each directory
     static const QString dirConfigFileName;
@@ -609,4 +615,20 @@ inline QString VConfigManager::getEditorCurrentLineVimBackground() const
 {
     return m_editorCurrentLineVimBackground;
 }
+
+inline bool VConfigManager::getEnableCodeBlockHighlight() const
+{
+    return m_enableCodeBlockHighlight;
+}
+
+inline void VConfigManager::setEnableCodeBlockHighlight(bool p_enabled)
+{
+    if (m_enableCodeBlockHighlight == p_enabled) {
+        return;
+    }
+    m_enableCodeBlockHighlight = p_enabled;
+    setConfigToSettings("global", "enable_code_block_highlight",
+                        m_enableCodeBlockHighlight);
+}
+
 #endif // VCONFIGMANAGER_H

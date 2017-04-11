@@ -96,6 +96,9 @@ void VConfigManager::initialize()
         m_webZoomFactor = VUtils::calculateScaleFactor();
         qDebug() << "set WebZoomFactor to" << m_webZoomFactor;
     }
+
+    m_enableCodeBlockHighlight = getConfigFromSettings("global",
+                                                       "enable_code_block_highlight").toBool();
 }
 
 void VConfigManager::readPredefinedColorsFromSettings()

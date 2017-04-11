@@ -131,3 +131,8 @@ var updateText = function(text) {
     }
 };
 
+var highlightText = function(text, id) {
+    content.setLog("highlightText: " + text + " " + id);
+    var html = markdownToHtml(text, false);
+    content.highlightTextCB(html, id);
+}
