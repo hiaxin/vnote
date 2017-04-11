@@ -68,5 +68,5 @@ void VDocument::highlightTextAsync(const QString &p_text, int p_id)
 
 void VDocument::highlightTextCB(const QString &p_html, int p_id)
 {
-    qDebug() << "highlightTextCallBack" << p_html << p_id;
+    emit textHighlighted(p_html, p_id);
 }

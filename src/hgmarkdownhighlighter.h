@@ -5,6 +5,8 @@
 #include <QSyntaxHighlighter>
 #include <QAtomicInt>
 #include <QSet>
+#include <QList>
+#include <QString>
 
 extern "C" {
 #include <pmh_parser.h>
@@ -38,6 +40,15 @@ struct HLUnit
     unsigned int styleIndex;
 };
 
+struct VCodeBlock
+{
+    int m_startBlock;
+    int m_endBlock;
+    QString m_lang;
+
+    QString m_text;
+};
+
 class HGMarkdownHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
@@ -53,6 +64,7 @@ public:
 signals:
     void highlightCompleted();
     void imageBlocksUpdated(QSet<int> p_blocks);
+    void codeBlocksUpdated(const QList<VCodeBlock> &p_codeBlocks);
 
 protected:
     void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
@@ -77,6 +89,9 @@ private:
     QTimer *timer;
     int waitInterval;
 
+    // All the code blocks info.
+    QList<VCodeBlock> m_codeBlocks;
+
     char *content;
     int capacity;
     pmh_element **result;
@@ -92,6 +107,7 @@ private:
     void initBlockHighlihgtOne(unsigned long pos, unsigned long end,
                                int styleIndex);
     void updateImageBlocks();
+    void updateCodeBlocks();
 };
 
 #endif

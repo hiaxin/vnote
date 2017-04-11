@@ -1,6 +1,10 @@
 #include <QtGui>
 #include <QtDebug>
+#include <QTextCursor>
 #include "hgmarkdownhighlighter.h"
+#include "vconfigmanager.h"
+
+extern VConfigManager vconfig;
 
 const int HGMarkdownHighlighter::initCapacity = 1024;
 
@@ -23,8 +27,8 @@ HGMarkdownHighlighter::HGMarkdownHighlighter(const QVector<HighlightingStyle> &s
     : QSyntaxHighlighter(parent), parsing(0),
       waitInterval(waitInterval), content(NULL), capacity(0), result(NULL)
 {
-    codeBlockStartExp = QRegExp("^(\\s)*```");
-    codeBlockEndExp = QRegExp("^(\\s)*```$");
+    codeBlockStartExp = QRegExp("^\\s*```(\\S*)");
+    codeBlockEndExp = QRegExp("^\\s*```$");
     codeBlockFormat.setForeground(QBrush(Qt::darkYellow));
     for (int index = 0; index < styles.size(); ++index) {
         const pmh_element_type &eleType = styles[index].type;
@@ -286,6 +290,7 @@ void HGMarkdownHighlighter::handleContentChange(int /* position */, int charsRem
 void HGMarkdownHighlighter::timerTimeout()
 {
     parse();
+    updateCodeBlocks();
     rehighlight();
     emit highlightCompleted();
 }
@@ -294,4 +299,52 @@ void HGMarkdownHighlighter::updateHighlight()
 {
     timer->stop();
     timerTimeout();
+}
+
+void HGMarkdownHighlighter::updateCodeBlocks()
+{
+    if (!vconfig.getEnableCodeBlockHighlight()) {
+        return;
+    }
+    m_codeBlocks.clear();
+
+    VCodeBlock item;
+    bool inBlock = false;
+
+    // Only handle complete codeblocks.
+    QTextBlock block = document->firstBlock();
+    while (block.isValid()) {
+        QString text = block.text();
+        if (inBlock) {
+            int idx = codeBlockEndExp.indexIn(text);
+            if (idx >= 0) {
+                // End block.
+                inBlock = false;
+                item.m_endBlock = block.blockNumber();
+
+                // Get the text.
+                QTextCursor cursor(document);
+                QTextBlock tmpBlock = document->findBlockByNumber(item.m_startBlock);
+                cursor.setPosition(tmpBlock.position());
+                tmpBlock = document->findBlockByNumber(item.m_endBlock);
+                cursor.setPosition(tmpBlock.position() + tmpBlock.length() - 1,
+                                    QTextCursor::KeepAnchor);
+                item.m_text = cursor.selectedText();
+                m_codeBlocks.append(item);
+            }
+        } else {
+            int idx = codeBlockStartExp.indexIn(text);
+            if (idx >= 0) {
+                // Start block.
+                inBlock = true;
+                item.m_startBlock = block.blockNumber();
+                if (codeBlockStartExp.captureCount() == 1) {
+                    item.m_lang = codeBlockStartExp.capturedTexts()[1];
+                }
+            }
+        }
+        block = block.next();
+    }
+
+    emit codeBlocksUpdated(m_codeBlocks);
 }

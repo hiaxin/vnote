@@ -2,9 +2,9 @@
 #define VCODEBLOCKHIGHLIGHTHELPER_H
 
 #include <QObject>
+#include <QList>
 #include "vconfigmanager.h"
 
-class HGMarkdownHighlighter;
 class VDocument;
 
 class VCodeBlockHighlightHelper : public QObject
@@ -16,7 +16,14 @@ public:
 
 signals:
 
-public slots:
+private slots:
+    void handleCodeBlocksUpdated(const QList<VCodeBlock> &p_codeBlocks);
+    void handleTextHighlightResult(const QString &p_html, int p_id);
+
+private:
+    HGMarkdownHighlighter *m_highlighter;
+    VDocument *m_vdocument;
+    MarkdownConverterType m_type;
 };
 
 #endif // VCODEBLOCKHIGHLIGHTHELPER_H

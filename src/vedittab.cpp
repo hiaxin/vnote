@@ -57,7 +57,7 @@ void VEditTab::setupUI()
     switch (m_file->getDocType()) {
     case DocType::Markdown:
         if (m_file->isModifiable()) {
-            m_textEditor = new VMdEdit(m_file, this);
+            m_textEditor = new VMdEdit(m_file, &document, mdConverterType, this);
             connect(dynamic_cast<VMdEdit *>(m_textEditor), &VMdEdit::headersChanged,
                     this, &VEditTab::updateTocFromHeaders);
             connect(dynamic_cast<VMdEdit *>(m_textEditor), &VMdEdit::statusChanged,

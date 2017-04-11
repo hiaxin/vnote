@@ -40,6 +40,7 @@ signals:
     void logChanged(const QString &p_log);
     void keyPressed(int p_key, bool p_ctrl, bool p_shift);
     void requestHighlightText(const QString &p_text, int p_id);
+    void textHighlighted(const QString &p_html, int p_id);
 
 private:
     QString m_toc;
